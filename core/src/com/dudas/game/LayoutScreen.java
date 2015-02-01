@@ -2,12 +2,17 @@ package com.dudas.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 /**
@@ -16,12 +21,18 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 public class LayoutScreen extends AbstractGameScreen {
 
     private static final String TAG = LayoutScreen.class.getName();
-    public static final int BOARD_POSITION_X = 8;
-    public static final int BOARD_POSITION_Y = 1;
-    public static final int BOARD_WIDTH = 9;
-    public static final int BOARD_HEIGHT = 9;
-    public static final int BOARD_RELATIVE_X = 0;
-    public static final int BOARD_RELATIVE_Y = 0;
+
+    // for 1280*720
+    public static final int VIEWPORT_WIDTH = 15;
+    public static final int VIEWPORT_HEIGHT = 10;
+    public static final float BOARD_POSITION_X = 7;
+    public static final float BOARD_POSITION_Y = 0.5f;
+
+    public static final float BOARD_WIDTH = 9;
+    public static final float BOARD_HEIGHT = 9;
+    public static final float BOARD_RELATIVE_X = 0;
+    public static final float BOARD_RELATIVE_Y = 0;
+
 
     private Stage stage;
     private Group group;
@@ -41,7 +52,9 @@ public class LayoutScreen extends AbstractGameScreen {
 
     @Override
     public void resize(int width, int height) {
-
+        stage.getViewport().update(width, height);
+        Camera camera = stage.getViewport().getCamera();
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0) ;
     }
 
     @Override
@@ -57,7 +70,12 @@ public class LayoutScreen extends AbstractGameScreen {
         group.addActor(createGemActor(1, 1));
         group.addActor(createGemActor(2, 2));
         group.addActor(createGemActor(3, 3));
-        group.addActor(createGemActor(5, 9));
+
+        // overflowed gems
+        group.addActor(createGemActor(-1, -1));
+        group.addActor(createGemActor(-1, 9));
+        group.addActor(createGemActor(9, -1));
+        group.addActor(createGemActor(9, 9));
     }
 
     private GemActor createGemActor(float x, float y) {
@@ -69,18 +87,8 @@ public class LayoutScreen extends AbstractGameScreen {
     private void initStack() {
         group = new Group();
         stage.addActor(group);
-
-        group.setPosition(BOARD_POSITION_X, BOARD_POSITION_Y);
-        group.setWidth(BOARD_WIDTH);
-        group.setHeight(BOARD_HEIGHT);
-//        group.setBounds(8, 1, 9, 9);
-//        group.clipBegin(8, 1, 9, 9);
-//        group.clipEnd();
-//        group.setFillParent(true);
+        group.setBounds(BOARD_POSITION_X, BOARD_POSITION_Y, BOARD_WIDTH, BOARD_HEIGHT);
         group.setTransform(true);
-
-//        group.setCullingArea(new Rectangle(8, 10, 9, 1));
-
     }
 
     private void initGameContainerActor() {
@@ -88,10 +96,11 @@ public class LayoutScreen extends AbstractGameScreen {
         containerActor.setBounds(BOARD_RELATIVE_X, BOARD_RELATIVE_Y, group.getWidth(), group.getHeight());
         containerActor.setTouchable(Touchable.enabled);
         group.addActor(containerActor);
+
     }
 
     private void initStage() {
-        ExtendViewport viewport = new ExtendViewport(17, 11);
+        ExtendViewport viewport = new ExtendViewport(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
         stage = new Stage(viewport);
         Gdx.input.setInputProcessor(stage);
     }

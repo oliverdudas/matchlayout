@@ -9,7 +9,9 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "MatchLayout";
 		config.width = 1280;
+//		config.width = 800;
 		config.height = 720;
+//		config.height = 600;
 		new LwjglApplication(new MatchLayout(), config);
 	}
 }
